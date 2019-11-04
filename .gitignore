@@ -1,0 +1,10 @@
+.ipynb_checkpoints/
+.ssh/
+.swp
+id_rsa.pub
+deck_html_files/
+type_html_files/
+mtg_archive.txt
+mtg_card_rarities_clean.csv
+standard_sets_clean.txt
+url_standard_page_response.html
