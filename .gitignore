@@ -8,3 +8,4 @@ mtg_archive.txt
 mtg_card_rarities_clean.csv
 standard_sets_clean.txt
 url_standard_page_response.html
+__pycache__/
