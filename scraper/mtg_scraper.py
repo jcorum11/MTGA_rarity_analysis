@@ -65,3 +65,9 @@ with os.scandir(cur_dir) as folder:
         if file.is_file():
             dir_names.append(file.name)
 
+# get player names
+players = []
+with open('C:/Users/muroc/Documents/MTG/type_html_files/4-5c_Aggro.html') as file:
+    soup = BeautifulSoup(file, 'lxml')
+for a in soup.find_all(href=re.compile(r'search\?player')):
+    players.append(a)
