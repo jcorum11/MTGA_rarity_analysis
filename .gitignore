@@ -10,3 +10,4 @@ standard_sets_clean.txt
 url_standard_page_response.html
 __pycache__/
 html_files/
+.vscode/

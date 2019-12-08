@@ -8,7 +8,14 @@ import re
 import os
 import timeit
 import filecmp
-import url_stripper
+
+# define a function to strip strings of "<>"
+def url_stripper(data, old_column, new_column_name, replacement): 
+    data[old_column] = data[old_column].astype('str')
+    data[new_column_name] = data[old_column].str.extract(replacement)
+    data[new_column_name] = data[new_column_name].str.replace('>', '')
+    data[new_column_name] = data[new_column_name].str.replace('<', '')
+    data[new_column_name] = data[new_column_name].str.strip()
 
 # pull deck type urls from mtgtop8.com with requests package
 url = 'https://www.mtgtop8.com/format?f=ST'
@@ -27,7 +34,7 @@ url = {'url': soup.find_all(href=re.compile(r"archetype\?a"))}
 deck_type_urls = pd.DataFrame(data=url)
 
 # create column for deck type and clean the column
-url_stripper.url_stripper(deck_type_urls, 'url', 'type', '(>.+<)')
+url_stripper(deck_type_urls, 'url', 'type', '(>.+<)')
 deck_type_urls['url'] = deck_type_urls.url.str.extract('(archetype.+f\=ST)')
 
 # add root url to the data
