@@ -97,7 +97,7 @@ deck_urls = pd.DataFrame({'player': players,
                          'url': urls})
 
 # get deck names and clean them up
-url_stripper.url_stripper(deck_urls, 'url', 'name', '(>.+<)')
+url_stripper(deck_urls, 'url', 'name', '(>.+<)')
 
 # extract url from the url column
 deck_urls['url'] = deck_urls.url.str.extract('(event.+f\=ST)')
@@ -108,7 +108,7 @@ deck_urls.url = 'https://www.mtgtop8.com/' + deck_urls.url
 # clean urls and name
 deck_urls['name'] = deck_urls.name.str.replace(' ', '_')
 deck_urls['name'] = deck_urls.name.str.replace('/', '-')
-url_stripper.url_stripper(deck_urls, 'player', 'player', '(>.+<)')
+url_stripper(deck_urls, 'player', 'player', '(>.+<)')
 deck_urls.player = deck_urls.player.str.replace(' ', '_')
 
 # create a web crawler to request html pages from deck_type_urls
