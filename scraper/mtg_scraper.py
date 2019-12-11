@@ -9,6 +9,8 @@ import os
 import timeit
 import filecmp
 
+# Page C
+
 # define a function to strip strings of "<>"
 def url_stripper(data, old_column, new_column_name, replacement): 
     data[old_column] = data[old_column].astype('str')
@@ -63,6 +65,8 @@ for i in np.arange(deck_type_urls.shape[0]):
     type_html = requests.get(deck_type_urls.url[i])
     with open(deck_type_urls.type[i], 'wb') as file:
         file.write(type_html.content)
+
+# Page D
 
 # get a list of file names in type_html_files folder and name it dir_names
 dir_names = []
