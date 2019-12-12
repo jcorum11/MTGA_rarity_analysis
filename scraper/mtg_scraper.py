@@ -8,19 +8,10 @@ import re
 import os
 import timeit
 import filecmp
+import url_stripper
 
-# Page C
-
-# define a function to strip strings of "<>"
-def url_stripper(data, old_column, new_column_name, replacement): 
-    data[old_column] = data[old_column].astype('str')
-    data[new_column_name] = data[old_column].str.extract(replacement)
-    data[new_column_name] = data[new_column_name].str.replace('>', '')
-    data[new_column_name] = data[new_column_name].str.replace('<', '')
-    data[new_column_name] = data[new_column_name].str.strip()
-
-# pull deck type urls from mtgtop8.com with requests package
-url = 'https://www.mtgtop8.com/format?f=ST'
+# make a webcrawler to gather the data from mtgtop8.com on competitive decks
+url = 'https://www.mtgtop8.com/format?f=ST&meta=52'
 url_standard_page_response = requests.get(url)
 
 # save the response
@@ -31,42 +22,38 @@ with open('C:\\Users\\muroc\\Documents\\MTG\\data\\url_standard_page_response.ht
 with open('C:\\Users\\muroc\\Documents\\MTG\\data\\url_standard_page_response.html') as file:
     soup = BeautifulSoup(file, 'lxml')
 
-# make the urls pulled from mtgtop8.com a dataframe with each observation a different url
+# find all urls for deck types and put them into a dataframe
 url = {'url': soup.find_all(href=re.compile(r"archetype\?a"))}
 deck_type_urls = pd.DataFrame(data=url)
 
-# create column for deck type and clean the column
-url_stripper(deck_type_urls, 'url', 'type', '(>.+<)')
-deck_type_urls['url'] = deck_type_urls.url.str.extract('(archetype.+f\=ST)')
+# make deck_type_urls.url a string and extract types from it and name the column 'type'
+deck_type_urls.url = deck_type_urls.url.astype('str')
+deck_type_urls['type'] = deck_type_urls.url.str.extract('(>.+<)')
 
-# add root url to the data
-urls = []
-for i in np.arange(deck_type_urls.shape[0]):
-    urls.append(str('https://www.mtgtop8.com/') + deck_type_urls.url[i])
+# clean up 'type' column
+deck_type_urls.type = deck_type_urls.type.str.replace('>', '').str.replace('<', '').str.replace(' ', '_').str.replace('/', '-')
 
-# clean up url column
-deck_type_urls['url'] = urls
-deck_type_urls['type'] = deck_type_urls.type.str.replace(' ', '_')
-deck_type_urls['type'] = deck_type_urls.type.str.replace('/', '-')
+# extract url from url column and add base url to it and clean it up a bit
+deck_type_urls.url = deck_type_urls.url.str.extract('(archetype\?a.+f\=ST)')
+deck_type_urls.url = 'https://www.mtgtop8.com/' + deck_type_urls.url
+deck_type_urls.url = deck_type_urls.url.str.replace('amp;', '')
 
 # create web crawler to request html pages from deck_type_urls
 # create new path and name it newpath
 newpath = 'C:\\Users\\muroc\\Documents\\MTG\\type_html_files'
 
-# check to make sure that there is no path that matches newpath and create a folder called html_files if there isn't
+# check to make sure that there is no path that matches newpath and create a folder called type_html_files if there isn't
 if not os.path.exists(newpath):
     os.makedirs(newpath)
 
 # change current directory to newpath
 os.chdir(newpath)
 
-# scrape all html files from urls in deck_type_urls and put them in html_files folder
+# scrape all html files from urls in deck_type_urls and put them in type_html_files folder
 for i in np.arange(deck_type_urls.shape[0]):
     type_html = requests.get(deck_type_urls.url[i])
-    with open(deck_type_urls.type[i], 'wb') as file:
+    with open(deck_type_urls.type[i] + '.html', 'wb') as file:
         file.write(type_html.content)
-
-# Page D
 
 # get a list of file names in type_html_files folder and name it dir_names
 dir_names = []
@@ -93,22 +80,26 @@ for i in np.arange(np.count_nonzero(dir_names)):
 deck_urls = pd.DataFrame({'player': players, 
                          'url': urls})
 
-# get deck names and clean them up
-url_stripper(deck_urls, 'url', 'name', '(>.+<)')
+# clean up player and url columns
+deck_urls.player = deck_urls.player.astype('str')
+deck_urls.player = deck_urls.player.str.extract('(>.+<)')
+deck_urls.player = deck_urls.player.str.replace('>', '').str.replace('<', '').str.replace(' ', '_').str.replace('/', '-')
 
-# extract url from the url column
-deck_urls['url'] = deck_urls.url.str.extract('(event.+f\=ST)')
+# extract names from urls and add them to name column and clean it up
+deck_urls.url = deck_urls.url.astype('str')
+names = deck_urls.url.str.extract('(>.+<)')
+deck_urls['name'] = names
+deck_urls.name = deck_urls.name.str.replace('>', '').str.replace('<', '').str.replace(' ', '_').str.replace('/', '-')
 
-# add root url to the data
+# clean up url column
+deck_urls.url = deck_urls.url.str.extract('(event.+f\=ST)')
+deck_urls.url = deck_urls.url.str.replace('amp;', '')
+
+# add url root to url column
 deck_urls.url = 'https://www.mtgtop8.com/' + deck_urls.url
 
-# clean urls and name
-deck_urls['name'] = deck_urls.name.str.replace(' ', '_')
-deck_urls['name'] = deck_urls.name.str.replace('/', '-')
-url_stripper(deck_urls, 'player', 'player', '(>.+<)')
-deck_urls.player = deck_urls.player.str.replace(' ', '_')
-
 # create a web crawler to request html pages from deck_type_urls
+
 # create a new path and name it newpath
 newpath = 'C:/Users/muroc/Documents/MTG/html_files'
 
@@ -125,8 +116,47 @@ deck_errors = []
 for i in np.arange(deck_urls.shape[0]):
     try:
         deck_html = requests.get(deck_urls.url[i])
-        with open(str(deck_urls.player[i]) + '_' + str(deck_urls.name[i]) + '.html', 'wb') as file:
+        with open(str(deck_urls.name[i]) + '_' + str(deck_urls.player[i]) + '.html', 'wb') as file:
             file.write(deck_html.content)
     except Exception as e:
         print(str(i) + ' ' + str(e))
         deck_errors.append(i)
+
+# get all directory names and put them in a list
+dir_names = []
+curdir = 'C:/Users/muroc/Documents/MTG/html_files'
+
+with os.scandir(curdir) as folder:
+    for file in folder:
+        if file.is_file():
+            dir_names.append(file.name)
+
+# take names and add them to curdir and open them and find cards and players with beautifulsoup 
+deck_lists = []
+players = []
+
+for i in np.arange(np.count_nonzero(dir_names)):
+    with open(str(curdir) + '/' + str(dir_names[i])) as file:
+        soup = BeautifulSoup(file, 'lxml')
+    deck_list = soup.find(lambda tag: tag.name=='input' and tag.has_attr('name') and tag['name']=='c')
+    player = soup.find(lambda tag: tag.name=='a' and tag.has_attr('class'))
+    deck_lists.append(deck_list)
+    players.append(player)
+
+decks = pd.DataFrame({'deck_list': deck_lists, 
+                      'player': players})
+
+# clean up decks 'player' column
+decks.player = decks.player.astype('str')
+decks.player = decks.player.str.extract('(>.+<)')
+decks.player = decks.player.str.replace('>', '').str.replace('<', '').str.replace(' ', '_').str.replace('/', '-')
+
+# clean up deck_list column
+decks.deck_list = decks.deck_list.astype('str')
+decks.deck_list = decks.deck_list.str.replace('<input name="c" type="hidden" value="', '').str.replace('||"/>', '').str.replace('\|\|', ', ')
+
+# join decks with deck_urls
+decks = decks.merge(deck_urls, how='outer', on='player')
+
+# save the dataframe to a .csv
+decks.to_csv('C:/Users/muroc/Documents/MTG/data/decks.csv', index=False)
