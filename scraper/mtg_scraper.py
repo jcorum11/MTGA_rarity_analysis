@@ -116,8 +116,9 @@ deck_errors = []
 for i in np.arange(deck_urls.shape[0]):
     try:
         deck_html = requests.get(deck_urls.url[i])
-        with open(str(deck_urls.name[i]) + '_' + str(deck_urls.player[i]) + '.html', 'wb') as file:
-            file.write(deck_html.content)
+        if not os.path.exists(str(deck_urls.name[i]) + '_' + str(deck_urls.player[i] + '.html')):
+            with open(str(deck_urls.name[i]) + '_' + str(deck_urls.player[i]) + '.html', 'wb') as file:
+                file.write(deck_html.content)
     except Exception as e:
         print(str(i) + ' ' + str(e))
         deck_errors.append(i)
@@ -136,12 +137,13 @@ deck_lists = []
 players = []
 
 for i in np.arange(np.count_nonzero(dir_names)):
-    with open(str(curdir) + '/' + str(dir_names[i])) as file:
-        soup = BeautifulSoup(file, 'lxml')
-    deck_list = soup.find(lambda tag: tag.name=='input' and tag.has_attr('name') and tag['name']=='c')
-    player = soup.find(lambda tag: tag.name=='a' and tag.has_attr('class'))
-    deck_lists.append(deck_list)
-    players.append(player)
+    if not os.path.exists(str(curdir) + '/' + str(dir_names[i])):
+        with open(str(curdir) + '/' + str(dir_names[i])) as file:
+            soup = BeautifulSoup(file, 'lxml')
+        deck_list = soup.find(lambda tag: tag.name=='input' and tag.has_attr('name') and tag['name']=='c')
+        player = soup.find(lambda tag: tag.name=='a' and tag.has_attr('class'))
+        deck_lists.append(deck_list)
+        players.append(player)
 
 decks = pd.DataFrame({'deck_list': deck_lists, 
                       'player': players})

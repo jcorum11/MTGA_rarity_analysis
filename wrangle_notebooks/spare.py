@@ -11,7 +11,6 @@ for index, rows in decks_clean.iterrows():
 cards = []
 for li in card_lists:
     for a in li: 
-        for card in a:
-            cards.append(card)
+        cards.append(card)
 
 print(cards)
