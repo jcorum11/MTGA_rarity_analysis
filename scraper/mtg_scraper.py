@@ -39,25 +39,24 @@ deck_type_urls.url = 'https://www.mtgtop8.com/' + deck_type_urls.url
 deck_type_urls.url = deck_type_urls.url.str.replace('amp;', '')
 
 # create web crawler to request html pages from deck_type_urls
-# create new path and name it newpath
-newpath = 'C:\\Users\\muroc\\Documents\\MTG\\type_html_files'
+cur_dir = 'C:/Users/muroc/Documents/MTG/type_html_files/'
 
-# check to make sure that there is no path that matches newpath and create a folder called type_html_files if there isn't
-if not os.path.exists(newpath):
-    os.makedirs(newpath)
+# check to make sure that there is no path that matches cur_dir and create a folder called type_html_files if there isn't
+if not os.path.exists(cur_dir):
+    os.makedirs(cur_dir)
 
-# change current directory to newpath
-os.chdir(newpath)
+# change current directory to cur_dir
+os.chdir(cur_dir)
 
 # scrape all html files from urls in deck_type_urls and put them in type_html_files folder
 for i in np.arange(deck_type_urls.shape[0]):
     type_html = requests.get(deck_type_urls.url[i])
-    with open(deck_type_urls.type[i] + '.html', 'wb') as file:
-        file.write(type_html.content)
+    if not os.path.exists(str(cur_dir) + '/' + str(dir_names[i])):
+        with open(deck_type_urls.type[i] + '.html', 'wb') as file:
+            file.write(type_html.content)
 
 # get a list of file names in type_html_files folder and name it dir_names
 dir_names = []
-cur_dir = 'C:/Users/muroc/Documents/MTG/type_html_files/'
 
 with os.scandir(cur_dir) as folder:
     for file in folder: 
@@ -100,15 +99,15 @@ deck_urls.url = 'https://www.mtgtop8.com/' + deck_urls.url
 
 # create a web crawler to request html pages from deck_type_urls
 
-# create a new path and name it newpath
-newpath = 'C:/Users/muroc/Documents/MTG/html_files'
+# create a new path and name it cur_dir
+cur_dir = 'C:/Users/muroc/Documents/MTG/html_files'
 
-# check to make sure that there is no path that matches newpath and create a folder called html_files if there isn't
-if not os.path.exists(newpath):
-    os.makedirs(newpath)
+# check to make sure that there is no path that matches cur_dir and create a folder called html_files if there isn't
+if not os.path.exists(cur_dir):
+    os.makedirs(cur_dir)
 
-# change the current directory to newpath
-os.chdir(newpath)
+# change the current directory to cur_dir
+os.chdir(cur_dir)
 
 # scrape all html files from urls in deck_urls and put them in html_files folder
 deck_errors = []
@@ -137,13 +136,12 @@ deck_lists = []
 players = []
 
 for i in np.arange(np.count_nonzero(dir_names)):
-    if not os.path.exists(str(curdir) + '/' + str(dir_names[i])):
-        with open(str(curdir) + '/' + str(dir_names[i])) as file:
-            soup = BeautifulSoup(file, 'lxml')
-        deck_list = soup.find(lambda tag: tag.name=='input' and tag.has_attr('name') and tag['name']=='c')
-        player = soup.find(lambda tag: tag.name=='a' and tag.has_attr('class'))
-        deck_lists.append(deck_list)
-        players.append(player)
+    with open(str(curdir) + '/' + str(dir_names[i])) as file:
+        soup = BeautifulSoup(file, 'lxml')
+    deck_list = soup.find(lambda tag: tag.name=='input' and tag.has_attr('name') and tag['name']=='c')
+    player = soup.find(lambda tag: tag.name=='a' and tag.has_attr('class'))
+    deck_lists.append(deck_list)
+    players.append(player)
 
 decks = pd.DataFrame({'deck_list': deck_lists, 
                       'player': players})
