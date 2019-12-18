@@ -39,7 +39,16 @@ deck_type_urls.url = 'https://www.mtgtop8.com/' + deck_type_urls.url
 deck_type_urls.url = deck_type_urls.url.str.replace('amp;', '')
 
 # create web crawler to request html pages from deck_type_urls
+
+# get a list of file names in type_html_files folder and name it dir_names
 cur_dir = 'C:/Users/muroc/Documents/MTG/type_html_files/'
+dir_names = []
+
+with os.scandir(cur_dir) as folder:
+    for file in folder: 
+        if file.is_file():
+            dir_names.append(file.name)
+
 
 # check to make sure that there is no path that matches cur_dir and create a folder called type_html_files if there isn't
 if not os.path.exists(cur_dir):
@@ -54,14 +63,6 @@ for i in np.arange(deck_type_urls.shape[0]):
     if not os.path.exists(str(cur_dir) + '/' + str(dir_names[i])):
         with open(deck_type_urls.type[i] + '.html', 'wb') as file:
             file.write(type_html.content)
-
-# get a list of file names in type_html_files folder and name it dir_names
-dir_names = []
-
-with os.scandir(cur_dir) as folder:
-    for file in folder: 
-        if file.is_file():
-            dir_names.append(file.name)
 
 # get a list of all urls in all files
 players = []
