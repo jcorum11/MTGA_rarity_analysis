@@ -144,20 +144,5 @@ for i in np.arange(np.count_nonzero(dir_names)):
     deck_lists.append(deck_list)
     players.append(player)
 
-decks = pd.DataFrame({'deck_list': deck_lists, 
-                      'player': players})
-
-# clean up decks 'player' column
-decks.player = decks.player.astype('str')
-decks.player = decks.player.str.extract('(>.+<)')
-decks.player = decks.player.str.replace('>', '').str.replace('<', '').str.replace(' ', '_').str.replace('/', '-')
-
-# clean up deck_list column
-decks.deck_list = decks.deck_list.astype('str')
-decks.deck_list = decks.deck_list.str.replace('<input name="c" type="hidden" value="', '').str.replace('||"/>', '').str.replace('\|\|', ', ')
-
-# join decks with deck_urls
-decks = decks.merge(deck_urls, how='outer', on='player')
-
-# save the dataframe to a .csv
-decks.to_csv('C:/Users/muroc/Documents/MTG/data/decks.csv', index=False)
+np.save('C:/Users/muroc/Documents/MTG/data/deck_list.npy', deck_list)
+np.save('C:/Users/muroc/Documents/MTG/data/players.npy', player)
