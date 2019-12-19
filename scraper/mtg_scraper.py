@@ -1,14 +1,10 @@
 # Load all packages necessary for analysis
-import pandas as pd
 import numpy as np
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import json
 import re
 import os
-import timeit
-import filecmp
-import url_stripper
 
 # make a webcrawler to gather the data from mtgtop8.com on competitive decks
 url = 'https://www.mtgtop8.com/format?f=ST&meta=52'
@@ -141,7 +137,7 @@ for i in np.arange(np.count_nonzero(dir_names)):
         soup = BeautifulSoup(file, 'lxml')
     deck_list = soup.find(lambda tag: tag.name=='input' and tag.has_attr('name') and tag['name']=='c')
     player = soup.find(lambda tag: tag.name=='a' and tag.has_attr('class'))
-    deck_lists.append(deck_list)
+    deck_list.append(deck_list)
     players.append(player)
 
 np.save('C:/Users/muroc/Documents/MTG/data/deck_list.npy', deck_list)
