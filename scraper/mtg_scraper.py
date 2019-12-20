@@ -137,7 +137,7 @@ for i in np.arange(np.count_nonzero(dir_names)):
         soup = BeautifulSoup(file, 'lxml')
     deck_list = soup.find(lambda tag: tag.name=='input' and tag.has_attr('name') and tag['name']=='c')
     player = soup.find(lambda tag: tag.name=='a' and tag.has_attr('class'))
-    deck_list.append(deck_list)
+    deck_lists.append(deck_list)
     players.append(player)
 
 np.save('C:/Users/muroc/Documents/MTG/data/deck_list.npy', deck_list)
