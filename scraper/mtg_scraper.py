@@ -140,4 +140,4 @@ for i in np.arange(np.count_nonzero(dir_names)):
     deck_lists.append(deck_list)
     players.append(player)
 
-np.save('C:/Users/muroc/Documents/MTG/data/deck_list.npy', deck_list, allow_pickle=False)
+np.save('C:/Users/muroc/Documents/MTG/data/deck_list.npy', deck_list, allow_pickle=True)
