@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import os
+import pickle
 
 # make a webcrawler to gather the data from mtgtop8.com on competitive decks
 url = 'https://www.mtgtop8.com/format?f=ST&meta=52'
@@ -140,4 +141,5 @@ for i in np.arange(np.count_nonzero(dir_names)):
     deck_lists.append(deck_list)
     players.append(player)
 
-np.save('C:/Users/muroc/Documents/MTG/data/deck_list.npy', deck_list, allow_pickle=True)
+with open('deck_list.pkl') as file:
+    pickle.dump(deck_lists, file)
