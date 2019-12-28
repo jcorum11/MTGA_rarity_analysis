@@ -141,5 +141,7 @@ for i in np.arange(np.count_nonzero(dir_names)):
     deck_lists.append(deck_list)
     players.append(player)
 
-with open('deck_list.pkl') as file:
-    pickle.dump(deck_lists, file)
+deck_lists = pd.DataFrame({'deck_list': deck_lists, 
+                           'players': players})
+
+deck_lists.to_csv('C:/Users/muroc/Documents/MTG/data/deck_lists.csv', index=False)
