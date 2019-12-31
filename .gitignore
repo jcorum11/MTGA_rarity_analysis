@@ -11,3 +11,5 @@ url_standard_page_response.html
 __pycache__/
 html_files/
 .vscode/
+ssh
+ssh.pub
