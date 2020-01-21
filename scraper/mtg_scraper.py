@@ -11,11 +11,11 @@ url = 'https://www.mtgtop8.com/format?f=ST&meta=52'
 url_standard_page_response = requests.get(url)
 
 # save the response
-with open('/home/steadyjingo/Documents/MTGA_rarity_analysis/data/url_standard_page_response.html', mode='wb') as file:
+with open('url_standard_page_response.html', mode='wb') as file:
     file.write(url_standard_page_response.content)
 
 # open response as a BeautifulSoup object
-with open('/home/steadyjingo/Documents/MTGA_rarity_analysis/data/url_standard_page_response.html') as file:
+with open('url_standard_page_response.html') as file:
     soup = BeautifulSoup(file, 'lxml')
 
 # find all urls for deck types and put them into a dataframe
@@ -37,7 +37,7 @@ deck_type_urls.url = deck_type_urls.url.str.replace('amp;', '')
 # create web crawler to request html pages from deck_type_urls
 
 # create new path and name it newpath
-newpath = '/home/steadyjingo/Documents/MTGA_rarity_analysis/type_html_files'
+newpath = 'type_html_files'
 
 # check to make sure that there is no path that matches newpath and create a folder called type_html_files if there isn't
 if not os.path.exists(newpath):
@@ -53,7 +53,7 @@ for i in np.arange(deck_type_urls.shape[0]):
         file.write(type_html.content)
 
 # get a list of file names in type_html_files folder and name it dir_names
-cur_dir = '/home/steadyjingo/Documents/MTGA_rarity_analysis/type_html_files/'
+cur_dir = os.path.abspath(os.curdir)
 dir_names = []
 
 with os.scandir(cur_dir) as folder:
@@ -81,7 +81,7 @@ players = []
 urls = []
 
 for i in np.arange(np.count_nonzero(dir_names)):
-    with open('/home/steadyjingo/Documents/MTG_rarity_analysis/type_html_files/' + dir_names[i]) as file:
+    with open(os.path.abspath(os.curdir) + '/' + dir_names[i], encoding='latin_1') as file:
         soup = BeautifulSoup(file, 'lxml')
     for a in soup.find_all(href=re.compile(r'search\?player')):
         players.append(a)
@@ -110,10 +110,18 @@ deck_urls.url = deck_urls.url.str.replace('amp;', '')
 # add url root to url column
 deck_urls.url = 'https://www.mtgtop8.com/' + deck_urls.url
 
-# create a web crawler to request html pages from deck_type_urls
+# back up one folder
+os.chdir('..')
 
-# create a new path and name it cur_dir
-cur_dir = '/home/steadyjingo/Documents/MTGA_rarity_analysis/html_files'
+# create new path and name it newpath
+newpath = os.path.abspath(os.curdir) + 'html_files'
+
+# check to make sure that there is no path that matches newpath and create a folder called type_html_files if there isn't
+if not os.path.exists(newpath):
+    os.makedirs(newpath)
+
+# change current directory to newpath
+os.chdir(newpath)
 
 # check to make sure that there is no path that matches cur_dir and create a folder called html_files if there isn't
 if not os.path.exists(cur_dir):
@@ -137,7 +145,7 @@ for i in np.arange(deck_urls.shape[0]):
 
 # get all directory names and put them in a list
 dir_names = []
-curdir = '/home/steadyjingo/Documents/MTGA_rarity_analysis/html_files'
+curdir = 'html_files'
 
 with os.scandir(curdir) as folder:
     for file in folder:
@@ -159,4 +167,5 @@ for i in np.arange(np.count_nonzero(dir_names)):
 deck_lists = pd.DataFrame({'deck_list': deck_lists, 
                            'players': players})
 
-deck_lists.to_csv('/home/steadyjingo/Documents/MTGA_rarity_analysis/data/deck_lists.csv', index=False)
+os.chdir('..')
+deck_lists.to_csv('deck_lists.csv', index=False)
