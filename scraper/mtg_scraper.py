@@ -123,13 +123,6 @@ if not os.path.exists(newpath):
 # change current directory to newpath
 os.chdir(newpath)
 
-# check to make sure that there is no path that matches cur_dir and create a folder called html_files if there isn't
-if not os.path.exists(cur_dir):
-    os.makedirs(cur_dir)
-
-# change the current directory to cur_dir
-os.chdir(cur_dir)
-
 # scrape all html files from urls in deck_urls and put them in html_files folder
 deck_errors = []
 
@@ -145,9 +138,8 @@ for i in np.arange(deck_urls.shape[0]):
 
 # get all directory names and put them in a list
 dir_names = []
-curdir = 'html_files'
 
-with os.scandir(curdir) as folder:
+with os.scandir(newpath) as folder:
     for file in folder:
         if file.is_file():
             dir_names.append(file.name)
@@ -157,7 +149,7 @@ deck_lists = []
 players = []
 
 for i in np.arange(np.count_nonzero(dir_names)):
-    with open(str(curdir) + '/' + str(dir_names[i])) as file:
+    with open(str(newpath) + '/' + str(dir_names[i])) as file:
         soup = BeautifulSoup(file, 'lxml')
     deck_list = soup.find(lambda tag: tag.name=='input' and tag.has_attr('name') and tag['name']=='c')
     player = soup.find(lambda tag: tag.name=='a' and tag.has_attr('class'))
