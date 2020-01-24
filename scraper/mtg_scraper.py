@@ -83,7 +83,7 @@ urls = []
 for i in np.arange(np.count_nonzero(dir_names)):
     with open(os.path.abspath(os.curdir) + '/' + dir_names[i], encoding='latin_1') as file:
         soup = BeautifulSoup(file, 'lxml')
-    for a in soup.find_all(href=re.compile(r'search\?player')):
+    for a in soup.find_all(attrs={'class':'player'}):
         players.append(a)
     for a in soup.find_all(href=re.compile(r'event\?e\=.+\&d\=.+\&f\=ST')):
         urls.append(a) 
@@ -114,7 +114,7 @@ deck_urls.url = 'https://www.mtgtop8.com/' + deck_urls.url
 os.chdir('..')
 
 # create new path and name it newpath
-newpath = os.path.abspath(os.curdir) + 'html_files'
+newpath = os.path.abspath(os.curdir) + '/' + 'html_files'
 
 # check to make sure that there is no path that matches newpath and create a folder called type_html_files if there isn't
 if not os.path.exists(newpath):
@@ -147,9 +147,9 @@ with os.scandir(newpath) as folder:
 # take names and add them to curdir and open them and find cards and players with beautifulsoup 
 deck_lists = []
 players = []
-
+#%%
 for i in np.arange(np.count_nonzero(dir_names)):
-    with open(str(newpath) + '/' + str(dir_names[i])) as file:
+    with open(str(newpath) + '/' + str(dir_names[i]), encoding='latin_1') as file:
         soup = BeautifulSoup(file, 'lxml')
     deck_list = soup.find(lambda tag: tag.name=='input' and tag.has_attr('name') and tag['name']=='c')
     player = soup.find(lambda tag: tag.name=='a' and tag.has_attr('class'))
