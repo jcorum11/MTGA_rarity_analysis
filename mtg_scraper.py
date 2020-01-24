@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import os
+import shutil
 
 # make a webcrawler to gather the data from mtgtop8.com on competitive decks
 url = 'https://www.mtgtop8.com/format?f=ST&meta=52'
@@ -147,7 +148,7 @@ with os.scandir(newpath) as folder:
 # take names and add them to curdir and open them and find cards and players with beautifulsoup 
 deck_lists = []
 players = []
-#%%
+
 for i in np.arange(np.count_nonzero(dir_names)):
     with open(str(newpath) + '/' + str(dir_names[i]), encoding='latin_1') as file:
         soup = BeautifulSoup(file, 'lxml')
@@ -161,3 +162,7 @@ deck_lists = pd.DataFrame({'deck_list': deck_lists,
 
 os.chdir('..')
 deck_lists.to_csv('deck_lists.csv', index=False)
+
+os.remove('url_standard_page_response.html')
+shutil.rmtree('type_html_files')
+shutil.rmtree('html_files')
