@@ -100,11 +100,6 @@ for _ in range(1000):
 
 
 ```python
-custom_pallette
-```
-
-
-```python
 # create a larger figure than the default
 fig = plt.figure(figsize=[16, 10])
 ax = fig.add_subplot(1, 1, 1)
@@ -132,7 +127,7 @@ plt.xlabel('Number of Rares In a Deck');
 ```
 
 
-![png](output_9_0.png)
+![png](output_8_0.png)
 
 
 The red line indicates the mean of the sampling distribution which is higher than 23. Since this distribution is theoretical, I then calculated a confidence interval shown below.
